@@ -219,3 +219,18 @@ export async function deletarEntregador(id) {
 
     return data;
 }
+/**
+ * Lista todas as entregas do entregador.
+ * Utilizada para o Dashboard e pesquisas.
+ */
+export async function listarTodas(entregadorId) {
+    const { data, error } = await supabase
+        .from("entregas")
+        .select("*")
+        .eq("entregador_id", entregadorId)
+        .order("criado_em", { ascending: false });
+
+    if (error) throw error;
+
+    return data;
+}

@@ -40,7 +40,7 @@ export default function App() {
     de navegação (qual tela está no topo da pilha agora). */}
     <NavigationContainer>
       {/* initialRouteName define qual tela abre primeiro quando o app inicia */}
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="ListaEntregas">
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ListaEntregas" component={ListaEntregasScreen} />
         <Stack.Screen name="FormularioEntrega" component={FormularioEntregaScreen} />

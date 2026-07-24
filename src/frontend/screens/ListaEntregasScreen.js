@@ -10,10 +10,13 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { listarPendentes, listarConcluidas } from '../../backend/entregas';
+import CardEntrega from "../components/CardEntrega";
 
 export default function ListaEntregasScreen({ route, navigation }) {
-  // o route.params traz o que a tela de login enviou no navigation.navigate
-  const { entregadorId } = route.params;
+  
+  const entregadorId =
+  route?.params?.entregadorId ??
+  "0f897059-f6cd-491a-9a6e-852ca5076a16";
 
   // Cada lista fica no seu próprio estado -- elas começam vazias
   const [pendentes, setPendentes] = useState([]);
@@ -51,16 +54,17 @@ export default function ListaEntregasScreen({ route, navigation }) {
   );
 
   function renderItem({ item }) {
-    return (
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => navigation.navigate('DetalheEntrega', { entrega: item })}
-      >
-        <Text style={styles.itemTitulo}>{item.codigo_pacote} — {item.destinatario_nome}</Text>
-        <Text style={styles.itemStatus}>{item.status}</Text>
-      </TouchableOpacity>
-    );
-  }
+  return (
+    <CardEntrega
+      entrega={item}
+      onPress={(entrega) =>
+        navigation.navigate("DetalheEntrega", {
+          entrega,
+        })
+      }
+    />
+  );
+}
 
   // --- Estado de carregamento: mostra um spinner enquanto busca os dados ---
   if (carregando) {
@@ -82,12 +86,47 @@ export default function ListaEntregasScreen({ route, navigation }) {
     );
   }
 
+  const total = pendentes.length + concluidas.length;
+
+const entregues = concluidas.filter(
+  item => item.status === "entregue"
+).length;
+
+const falhas = concluidas.filter(
+  item => item.status === "falha"
+).length;
+
   return (
     <View style={styles.container}>
-      <Button
-        title="Nova Entrega"
-        onPress={() => navigation.navigate('FormularioEntrega', { entregadorId })}
-      />
+      <View style={styles.dashboard}>
+  <View style={styles.cardDashboard}>
+    <Text style={styles.numero}>{total}</Text>
+    <Text style={styles.label}>📦 Total</Text>
+  </View>
+
+  <View style={styles.cardDashboard}>
+    <Text style={styles.numero}>{pendentes.length}</Text>
+    <Text style={styles.label}>🟡 Pendentes</Text>
+  </View>
+
+  <View style={styles.cardDashboard}>
+    <Text style={styles.numero}>{entregues}</Text>
+    <Text style={styles.label}>🟢 Entregues</Text>
+  </View>
+
+  <View style={styles.cardDashboard}>
+    <Text style={styles.numero}>{falhas}</Text>
+    <Text style={styles.label}>🔴 Falhas</Text>
+  </View>
+</View>
+      <View style={{ marginBottom: 20 }}>
+  <Button
+    title="Nova Entrega"
+    onPress={() =>
+      navigation.navigate("FormularioEntrega", { entregadorId })
+    }
+  />
+</View>
 
       <Text style={styles.secao}>Pendentes</Text>
       {pendentes.length === 0 ? (
@@ -115,6 +154,43 @@ export default function ListaEntregasScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+
+dashboard: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  marginBottom: 20,
+},
+
+cardDashboard: {
+  width: "48%",
+  backgroundColor: "#16a34a",
+  borderRadius: 16,
+  paddingVertical: 22,
+  paddingHorizontal: 12,
+  marginBottom: 12,
+  alignItems: "center",
+
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.15,
+  shadowRadius: 4,
+
+  elevation: 5,
+},
+
+numero: {
+  fontSize: 28,
+  color: "#fff",
+  fontWeight: "bold",
+},
+
+label: {
+  color: "#fff",
+  marginTop: 6,
+  fontSize: 14,
+},
+
   container: {
     flex: 1,
     padding: 20,
@@ -126,11 +202,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   secao: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginTop: 20,
-    marginBottom: 8,
-  },
+  fontSize: 18,
+  fontWeight: "700",
+  color: "#1f2937",
+  marginTop: 20,
+  marginBottom: 10,
+},
   vazio: {
     color: '#777',
     fontStyle: 'italic',

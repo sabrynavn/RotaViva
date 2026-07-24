@@ -113,6 +113,17 @@ export default function ListaEntregaScreen({ navigation }) {
 
     return (
       <View>
+        <View style={styles.dashboardCard}>
+  <Text style={styles.dashboardTitulo}>
+    Bem-vindo ao RotaViva
+  </Text>
+
+  <Text style={styles.dashboardTexto}>
+    {abaAtiva === 'Pendentes'
+      ? `Você possui ${restantes} entrega${restantes !== 1 ? 's' : ''} pendente${restantes !== 1 ? 's' : ''}.`
+      : `Consulte o histórico das entregas finalizadas.`}
+  </Text>
+</View>
         {/* Indicador de entregas restantes (desafio extra do escopo) */}
         {abaAtiva === 'Pendentes' && (
           <View style={styles.indicadorContainer}>
@@ -339,6 +350,27 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     textAlign: 'center',
   },
+
+  dashboardCard: {
+  backgroundColor: '#16a34a',
+  marginHorizontal: 16,
+  marginTop: 16,
+  marginBottom: 12,
+  borderRadius: 14,
+  padding: 18,
+},
+
+dashboardTitulo: {
+  color: '#fff',
+  fontSize: 20,
+  fontWeight: '700',
+  marginBottom: 6,
+},
+
+dashboardTexto: {
+  color: '#dcfce7',
+  fontSize: 15,
+},
 
   // --- Conteúdo da lista ---
   listaConteudo: {
