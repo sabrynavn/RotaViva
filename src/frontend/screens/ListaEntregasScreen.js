@@ -192,6 +192,7 @@ export default function ListaEntregasScreen({ route, navigation }) {
         </Text>
       ) : (
         <FlatList
+          style={styles.lista}
           data={pendentesFiltradas}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
@@ -209,6 +210,7 @@ export default function ListaEntregasScreen({ route, navigation }) {
         </Text>
       ) : (
         <FlatList
+          style={styles.lista}
           data={concluidasFiltradas}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
@@ -298,6 +300,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
+
+  lista: {
+  flexGrow: 0,
+},
 
   centro: {
     flex: 1,
