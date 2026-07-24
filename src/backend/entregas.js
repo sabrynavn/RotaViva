@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { registrarAcao } from './historico';
 
 
 /** Explicando alguns códigos para facilitar o entendimento:
@@ -28,24 +29,42 @@ import { supabase } from "./supabase";
  */
 
 export async function criarEntrega(entregadorId, dados) {
-    // Insere as informações na tabela 'entregas'
-    const {data, error} = await supabase
+  // Cadastra a nova entrega no Supabase Database
+  const { data, error } = await supabase
     .from('entregas')
     .insert({
-        entregador_id: entregadorId, // Vincula ao entregador que está criando
-        codigo_pacote: dados.codigo_pacote,
-        destinatario_nome: dados.destinatario_nome,
-        endereco: dados.endereco,
-        latitude: dados.latitude,
-        longitude: dados.longitude,
-        status: 'pendente',  // Toda entrega nova começa com o status 'pendente'
+      entregador_id: entregadorId,
+      codigo_pacote: dados.codigo_pacote,
+      destinatario_nome: dados.destinatario_nome,
+      endereco: dados.endereco,
+      latitude: dados.latitude,
+      longitude: dados.longitude,
+      status: 'pendente',
     })
-    .select() // Pede para o banco devolver os dados criados (precisamos do ID gerado)
-    .single(); // Garante que retorna apenas esse registro
+    .select()
+    .single();
 
-    if (error) throw error;
-    // Retorna a entrega criada
-    return data;
+  if (error) {
+    throw error;
+  }
+
+  // Registra no banco em nuvem que uma entrega foi cadastrada
+  try {
+    await registrarAcao({
+      acao: 'CADASTRO_ENTREGA',
+      descricao: `Entrega ${data.codigo_pacote} cadastrada para ${data.destinatario_nome}.`,
+      entregaId: data.id,
+      entregadorId,
+    });
+  } catch (historicoError) {
+    // A entrega continua cadastrada mesmo se o histórico apresentar erro
+    console.log(
+      'A entrega foi cadastrada, mas o histórico não foi registrado:',
+      historicoError.message
+    );
+  }
+
+  return data;
 }
 
 /**
